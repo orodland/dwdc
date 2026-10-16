@@ -124,6 +124,10 @@ execution.json  wall-clock, host, user (deliberately excluded from output hashes
 qa/score.json   written by `brokerrecon score`
 ```
 
+For very large runs the review pack embeds full detail for the first 2,000 exceptions,
+and the workbook lists only non-matched trades above 150,000 records. `trades.csv` and the
+lineage file are always complete.
+
 ## Commands
 
 ```bash
@@ -146,7 +150,7 @@ Templates in `config/brokers/` ship as `status: proposed`; approve them before a
 |---|---|
 | Unit and end-to-end tests | 31 passing |
 | `demo` across seeds 7, 11, 23, 101 (2,500 trades each) | All gates pass: 0 false matches, 100 % seeded breaks with the correct code, 100 % row completeness, 100 % field accuracy, byte-identical re-run |
-| Scale run | SCALE_RESULT |
+| Scale run: 200,031 internal trades vs 190,782 broker rows (3 Excel statements, 1 CSV, about 1,460 PDF pages) | All gates pass: 0 false matches; 8,286/8,286 seeded breaks with the correct code; 1,981,033/1,981,033 fields correct. **8.5 minutes** end to end, single process, 6.2 GB peak memory, on a 4-vCPU cloud container. Most of the time is PDF parsing plus the independent re-read; documents are independent, so this parallelises |
 
 Bugs the controls caught while this was being built, which is the point of having them:
 

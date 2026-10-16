@@ -35,6 +35,7 @@ DISPOSITIONS = {
 NEEDS_EVIDENCE = {k for k in DISPOSITIONS if k.startswith("RESOLVED")}
 MAX_IMAGES = 400
 MAX_TRADES_LISTED = 3000
+MAX_DETAILED_EXCEPTIONS = 2000  # beyond this, detail stays in lineage/records.jsonl.gz to keep the page light
 
 DISPLAY_FIELDS = ("product_type", "account", "exchange", "root", "contract_month", "put_call", "strike", "ccy_pair",
                   "value_date", "side", "quantity", "price", "trade_date", "broker_ref", "aps_group_id", "internal_id")
@@ -73,7 +74,7 @@ def _snippet(evidence_dir: Path, rec: Record, cache: dict) -> str | None:
 def build_review_pack(run_dir: Path, evidence_dir: Path, records: list[Record], exceptions: list[ExceptionItem],
                       doc_rows: list[dict], summary: dict) -> Path:
     by_id = {r.record_id: r for r in records}
-    involved = sorted({rid for e in exceptions for rid in e.record_ids})
+    involved = sorted({rid for e in exceptions[:MAX_DETAILED_EXCEPTIONS] for rid in e.record_ids})
     cache: dict = {}
     images = {}
     for rid in involved:
@@ -104,6 +105,7 @@ def build_review_pack(run_dir: Path, evidence_dir: Path, records: list[Record], 
         "trades": [[r.record_id, r.origin, r.broker_id, r.status, r.code, r.product_type or "", r.root or r.ccy_pair or "",
                     r.side or "", r.quantity or "", r.price or "", r.trade_date or ""] for r in records[:MAX_TRADES_LISTED]],
         "trades_total": len(records),
+        "detail_limit": MAX_DETAILED_EXCEPTIONS,
         "dispositions": DISPOSITIONS,
     }
     payload = canonical_json(data).replace("</", "<\\/")
@@ -241,6 +243,7 @@ function showEx(id){const e=D.exceptions.find(x=>x.exception_id==id);const recs=
  const ints=recs.filter(r=>r.origin=='INTERNAL'),brks=recs.filter(r=>r.origin=='BROKER');let cmp='';
  if(recs.length){const cols=[...ints,...brks];const fields=Object.keys(cols[0].fields).filter(f=>cols.some(c=>c.fields[f]!=null&&c.fields[f]!==''));
   cmp=`<table class="cmp"><thead><tr><th>Field</th>${cols.map(c=>`<th>${c.origin}<br><span class="kv">${esc(c.id)}</span></th>`).join('')}</tr></thead><tbody>${fields.map(f=>{const vals=cols.map(c=>c.fields[f]);const d=e.diff_fields.includes(f);return`<tr><td>${f}</td>${vals.map(v=>`<td class="num ${d?'diff':''}">${esc(v)}</td>`).join('')}</tr>`}).join('')}</tbody></table>`}
+ if(!recs.length&&e.record_ids.length){$('#det').innerHTML=`<h3>${chipFor(e.code)} <code>${e.exception_id}</code></h3><p>${esc(e.detail)}</p><p class="muted">Record detail for this exception is not embedded (the run has more than ${D.detail_limit} exceptions). Records: ${e.record_ids.map(esc).join(', ')} &mdash; see <code>lineage/records.jsonl.gz</code>.</p>`;return}
  $('#det').innerHTML=`<h3>${chipFor(e.code)} <code>${e.exception_id}</code></h3><p>${esc(e.detail)}</p>
  <p class="kv">level ${e.level} &middot; status ${e.status} &middot; broker ${esc(e.broker_id)} ${e.source_file?'&middot; '+esc(e.source_file):''}</p>${cmp}${recs.map(recBlock).join('')}
  <h3 style="margin-top:14px">Record a disposition</h3><p class="muted">Use <code>brokerrecon review template</code>, fill a disposition for <code>${e.exception_id}</code> with a comment (and evidence reference when resolving), then <code>brokerrecon review apply</code>. Allowed: ${Object.keys(D.dispositions).map(k=>`<code>${k}</code>`).join(', ')}.</p>`}
