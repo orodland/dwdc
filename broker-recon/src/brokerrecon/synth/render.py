@@ -67,6 +67,7 @@ def render_a(rows: list[BrokerRow], path: Path) -> int:
     for c in ws[1]:
         c.font = Font(bold=True)
     lots = Decimal(0)
+    row_no = 1  # header row; tracked here because ws.max_row is O(n) per call
     for r in rows:
         t = r.trade
         y, m = t.contract_month.split("-")
@@ -79,7 +80,8 @@ def render_a(rows: list[BrokerRow], path: Path) -> int:
             _ov(r, "quantity", _num(t.quantity)) or None, (_ov(r, "price", _num(t.price)) if "price" not in r.overrides else None),
             dt.datetime.combine(t.trade_date, dt.time()), "Y" if r.aps_flag else None,
         ])
-        ws.cell(row=ws.max_row, column=12).number_format = "yyyy-mm-dd"
+        row_no += 1
+        ws.cell(row=row_no, column=12).number_format = "yyyy-mm-dd"
     ws.append([])
     ws.append(["TOTAL OPEN TRADES", len(rows), None, None, None, None, None, None, None, int(lots)])
     wb.save(path)

@@ -98,9 +98,10 @@ def heuristic_proposal(path: Path, broker_id: str, ref_roots: set[str]) -> tuple
     body = [r for r in rows[header_idx + 1:] if any(r)]
     col = {lbl: header.index(lbl) for lbl in header if lbl}
     ref_lbl = columns.get("broker_ref")
-    data = [r for r in body if ref_lbl and len(r) > col[ref_lbl] and r[col[ref_lbl]]
-            and re.match(r"^[A-Z0-9][A-Z0-9\-_/]+$", r[col[ref_lbl]]) and len(r) >= len(header) - 1]
-    trailer = [r for r in body if r not in data]
+    is_data = [bool(ref_lbl and len(r) > col[ref_lbl] and r[col[ref_lbl]]
+                    and re.match(r"^[A-Z0-9][A-Z0-9\-_/]+$", r[col[ref_lbl]]) and len(r) >= len(header) - 1) for r in body]
+    data = [r for r, d in zip(body, is_data) if d]
+    trailer = [r for r, d in zip(body, is_data) if not d]
     vals = lambda f: [r[col[columns[f]]] for r in data if f in columns and len(r) > col[columns[f]]]  # noqa: E731
     notes = []
 
