@@ -1,0 +1,54 @@
+config_id: BRK_B.v1
+broker_id: BRK_B
+broker_name: Bravo Clearing AG (synthetic)
+version: 1
+status: proposed
+format: xlsx
+fingerprint:
+  filename_regex: '^bravo_.*\.xlsx$'
+  must_contain: [Bravo Clearing AG, Futures & Options, FX Forwards]
+tables:
+- name: futures_options
+  sheet: Futures & Options
+  header: [Ticket, Acct, Product Code, Contract Month, Call/Put, Strike Px, Quantity, Price, Trade Dt]
+  columns:
+    broker_ref: Ticket
+    account: Acct
+    instrument_code: Product Code
+    contract_month: Contract Month
+    put_call: Call/Put
+    strike: Strike Px
+    quantity: Quantity
+    price: Price
+    trade_date: Trade Dt
+  product_type: {opt_if_present: put_call}
+  totals:
+  - regex: '^Total records: (?P<count>\d+)$'
+  end_patterns: ['^Total records:']
+  row_ref_pattern: 'BC-\d{7}'
+- name: fx_forwards
+  sheet: FX Forwards
+  header: [Ticket, Acct, Currency Pair, Buy/Sell, Notional, Fwd Rate, Trade Dt, Value Dt]
+  columns:
+    broker_ref: Ticket
+    account: Acct
+    ccy_pair: Currency Pair
+    side: Buy/Sell
+    quantity: Notional
+    price: Fwd Rate
+    trade_date: Trade Dt
+    value_date: Value Dt
+  product_type: {constant: FXFWD}
+  totals:
+  - regex: '^Total records: (?P<count>\d+)$'
+  end_patterns: ['^Total records:']
+  row_ref_pattern: 'BC-\d{7}'
+  format_overrides: {signed_quantity: false}
+formats:
+  date: '%d.%m.%Y'
+  contract_month: MON-YYYY
+  signed_quantity: true
+  side_map: {Buy: BUY, Sell: SELL}
+  put_call_map: {Call: C, Put: P}
+  price_unit: {ZC: dollars, ZW: dollars, ZS: dollars}
+symbology: {CORN: ZC, WHEAT: ZW, SOYBEAN: ZS, WTI: CL, NATGAS: NG, BRENT: B, COFFEE: KC, SUGAR11: SB, GOLD: GC, COPPER: HG}

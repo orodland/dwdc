@@ -1,0 +1,21 @@
+# Canonical instrument reference data (synthetic, illustrative).
+# Every price/strike is held in the exchange quote unit listed here; broker
+# configs declare how their statements differ, and normalisation converts
+# deterministically. Changing this file changes the reference-data hash
+# recorded in every run manifest.
+version: "2026.10-1"
+
+instruments:
+  ZC: {name: Corn,               exchange: XCBT, exchange_aliases: [XCBT, CBT, CBOT], quote_unit: cents, currency: USD, multiplier: 50,    tick: "0.25",   aps_price_decimals: 4, product_types: [FUT, OPT]}
+  ZW: {name: Wheat,              exchange: XCBT, exchange_aliases: [XCBT, CBT, CBOT], quote_unit: cents, currency: USD, multiplier: 50,    tick: "0.25",   aps_price_decimals: 4, product_types: [FUT]}
+  ZS: {name: Soybeans,           exchange: XCBT, exchange_aliases: [XCBT, CBT, CBOT], quote_unit: cents, currency: USD, multiplier: 50,    tick: "0.25",   aps_price_decimals: 4, product_types: [FUT]}
+  CL: {name: WTI Crude Oil,      exchange: XNYM, exchange_aliases: [XNYM, NYM, NYMEX], quote_unit: units, currency: USD, multiplier: 1000, tick: "0.01",   aps_price_decimals: 4, product_types: [FUT, OPT]}
+  NG: {name: Henry Hub Nat Gas,  exchange: XNYM, exchange_aliases: [XNYM, NYM, NYMEX], quote_unit: units, currency: USD, multiplier: 10000, tick: "0.001", aps_price_decimals: 5, product_types: [FUT]}
+  B:  {name: Brent Crude,        exchange: IFEU, exchange_aliases: [IFEU, ICE, ICEEU], quote_unit: units, currency: USD, multiplier: 1000, tick: "0.01",   aps_price_decimals: 4, product_types: [FUT, OPT]}
+  KC: {name: Coffee C,           exchange: IFUS, exchange_aliases: [IFUS, ICE, ICEUS], quote_unit: cents, currency: USD, multiplier: 375,  tick: "0.05",   aps_price_decimals: 4, product_types: [FUT]}
+  SB: {name: Sugar No. 11,       exchange: IFUS, exchange_aliases: [IFUS, ICE, ICEUS], quote_unit: cents, currency: USD, multiplier: 1120, tick: "0.01",   aps_price_decimals: 4, product_types: [FUT]}
+  GC: {name: Gold,               exchange: XCEC, exchange_aliases: [XCEC, CMX, COMEX], quote_unit: units, currency: USD, multiplier: 100,  tick: "0.1",    aps_price_decimals: 3, product_types: [FUT, OPT]}
+  HG: {name: Copper,             exchange: XCEC, exchange_aliases: [XCEC, CMX, COMEX], quote_unit: units, currency: USD, multiplier: 25000, tick: "0.0005", aps_price_decimals: 5, product_types: [FUT]}
+
+# ISO 4217 codes accepted in FX currency pairs.
+currencies: [AUD, CAD, CHF, EUR, GBP, JPY, NOK, SEK, USD]

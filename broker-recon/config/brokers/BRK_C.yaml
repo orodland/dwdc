@@ -1,0 +1,40 @@
+config_id: BRK_C.v1
+broker_id: BRK_C
+broker_name: Charlie Markets Ltd (synthetic)
+version: 1
+status: proposed
+format: pdf
+fingerprint:
+  filename_regex: '^charlie_.*\.pdf$'
+  must_contain: [Charlie Markets Ltd, Open Trade Statement]
+page_patterns:
+  page_number: 'Page (?P<n>\d+) of (?P<m>\d+)$'
+  ignore:
+  - '^Charlie Markets Ltd \(synthetic\) - Open Trade Statement$'
+  - '^Statement date \d{2}/\d{2}/\d{4} Client: '
+tables:
+- name: open_trades
+  header: [Ref, Trade Date, B/S, Qty, Contract, Strike, P/C, Price]
+  columns:
+    broker_ref: Ref
+    trade_date: Trade Date
+    side: B/S
+    quantity: Qty
+    strike: Strike
+    put_call: P/C
+    price: Price
+  splits:
+  - column: Contract
+    regex: '^(?P<instrument_code>[A-Z]+) (?P<contract_month>[FGHJKMNQUVXZ]\d)$'
+  product_type: {opt_if_present: put_call}
+  section_patterns: ['^Account: (?P<account>\S+)$']
+  skip_patterns: ['^Subtotal \S+: \d+ trades$']
+  totals:
+  - regex: 'Total open trades: (?P<count>[\d,]+) Total lots: (?P<quantity>[\d,]+)'
+  row_ref_pattern: 'CM-\d{7}'
+formats:
+  date: '%d/%m/%Y'
+  contract_month: CODE_Y1
+  side_map: {B: BUY, S: SELL}
+  price_format: {ZC: eighths_apostrophe, ZW: eighths_apostrophe, ZS: eighths_apostrophe}
+symbology: {ZC: ZC, ZW: ZW, ZS: ZS, CL: CL, NG: NG, B: B, KC: KC, SB: SB, GC: GC, HG: HG}

@@ -1,0 +1,35 @@
+config_id: BRK_D.v1
+broker_id: BRK_D
+broker_name: Delta FX & Commodities SA (synthetic)
+version: 1
+status: proposed
+format: pdf
+fingerprint:
+  filename_regex: '^delta_.*\.pdf$'
+  must_contain: [Delta FX & Commodities SA]
+page_patterns:
+  page_number: 'Page (?P<n>\d+) of (?P<m>\d+)$'
+  ignore:
+  - '^Delta FX & Commodities SA \(synthetic\)$'
+  - '^Confirmation of outstanding forward deals at '
+tables:
+- name: fx_forwards
+  header: [Deal No, Account, Pair, Buy/Sell, Base Amount, Forward Rate, Trade Date, Value Date]
+  columns:
+    broker_ref: Deal No
+    account: Account
+    ccy_pair: Pair
+    side: Buy/Sell
+    quantity: Base Amount
+    price: Forward Rate
+    trade_date: Trade Date
+    value_date: Value Date
+  product_type: {constant: FXFWD}
+  totals:
+  - regex: '^Number of deals: (?P<count>\d+)$'
+  row_ref_pattern: 'DX-\d{7}'
+formats:
+  date: '%d-%b-%Y'
+  decimal_separator: ','
+  thousands_separator: '.'
+  side_map: {Buy: BUY, Sell: SELL}

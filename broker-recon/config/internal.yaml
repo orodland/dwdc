@@ -1,0 +1,38 @@
+config_id: INTERNAL.v1
+broker_id: INTERNAL
+broker_name: Internal open-trade list (client trading system extract, synthetic)
+version: 1
+status: proposed
+format: xlsx
+fingerprint: {}
+tables:
+- name: open_trades
+  sheet: OpenTrades
+  header: [InternalTradeID, BrokerID, Account, ProductType, Exchange, Root, ContractMonth, PutCall, Strike, CcyPair, ValueDate, Side, Quantity, Price, TradeDate, BrokerRef, APSGroupID]
+  columns:
+    internal_id: InternalTradeID
+    broker_id: BrokerID
+    account: Account
+    exchange: Exchange
+    instrument_code: Root
+    contract_month: ContractMonth
+    put_call: PutCall
+    strike: Strike
+    ccy_pair: CcyPair
+    value_date: ValueDate
+    side: Side
+    quantity: Quantity
+    price: Price
+    trade_date: TradeDate
+    broker_ref: BrokerRef
+    aps_group_id: APSGroupID
+  product_type: {column: ProductType}
+  totals:
+  - regex: '^Total records: (?P<count>\d+)$'
+  end_patterns: ['^Total records:']
+  row_ref_pattern: 'T\d{8}'
+formats:
+  date: '%Y-%m-%d'
+  contract_month: YYYY-MM
+  side_map: {BUY: BUY, SELL: SELL}
+symbology: {ZC: ZC, ZW: ZW, ZS: ZS, CL: CL, NG: NG, B: B, KC: KC, SB: SB, GC: GC, HG: HG}

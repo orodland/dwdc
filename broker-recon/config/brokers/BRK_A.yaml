@@ -1,0 +1,37 @@
+config_id: BRK_A.v1
+broker_id: BRK_A
+broker_name: Alpha Futures (synthetic)
+version: 1
+status: proposed
+format: xlsx
+fingerprint:
+  filename_regex: '^alpha_.*\.xlsx$'
+  must_contain: [Open Trades, Trade Ref, Trade Price]
+tables:
+- name: open_trades
+  sheet: Open Trades
+  header: [Trade Ref, Account, Exch, Contract, Mth, Type, P/C, Strike, B/S, Lots, Trade Price, Trade Date, AP]
+  columns:
+    broker_ref: Trade Ref
+    account: Account
+    exchange: Exch
+    instrument_code: Contract
+    contract_month: Mth
+    put_call: P/C
+    strike: Strike
+    side: B/S
+    quantity: Lots
+    price: Trade Price
+    trade_date: Trade Date
+    aps_flag: AP
+  product_type: {column: Type, map: {F: FUT, O: OPT}}
+  totals:
+  - regex: '^TOTAL OPEN TRADES (?P<count>\d+) (?P<quantity>\d+)$'
+  end_patterns: ['^TOTAL OPEN TRADES']
+  row_ref_pattern: 'AF-\d{7}'
+formats:
+  date: '%Y-%m-%d'
+  contract_month: MONYY
+  side_map: {B: BUY, S: SELL}
+  aps_true_values: ['Y']
+symbology: {C: ZC, W: ZW, S: ZS, CL: CL, NG: NG, BRN: B, KC: KC, SB: SB, GC: GC, HG: HG}
